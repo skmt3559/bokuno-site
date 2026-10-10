@@ -1,0 +1,22 @@
+{
+  "name": "bokuno",
+  "fullName": "髪質改善美容室bokuno（ボクノ）",
+  "tagline": "髪質改善美容室",
+  "description": "髪質改善美容室bokuno（ボクノ）の公式サイト。独自の縮毛矯正とマンツーマンのカウンセリングで、乾かすだけでまとまるツヤ髪へ。",
+  "noindex": true,
+  "instagram": "https://www.instagram.com/bokuno_eita/",
+  "prefectureOrder": ["神奈川県", "東京都", "埼玉県", "千葉県", "茨城県", "愛知県", "大阪府", "福岡県", "北海道"],
+  "nav": [
+    { "label": "髪質改善", "en": "Concept", "href": "/kaizen/" },
+    { "label": "サービス", "en": "Service", "href": "/service/" },
+    { "label": "店舗一覧", "en": "Salon", "href": "/shoplist/" },
+    { "label": "求人採用", "en": "Recruit", "href": "/recruit/" },
+    { "label": "会社概要", "en": "Company", "href": "/company/" },
+    { "label": "お問い合わせ", "en": "Contact", "href": "/inquiry/" }
+  ],
+  "reserveCta": {
+    "title": "ご予約",
+    "text": "髪質改善美容室bokuno（ボクノ）では、お客様とのお時間を大切にできるよう完全予約制となっております。店舗一覧からお近くの店舗にご予約ください。",
+    "button": "店舗を探して予約する"
+  }
+}

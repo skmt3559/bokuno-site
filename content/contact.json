@@ -1,0 +1,16 @@
+{
+  "title": "お問い合わせ",
+  "en": "Contact",
+  "description": "株式会社bokunoへのお問い合わせ。",
+  "lead": "株式会社bokuno（ボクノ）のお問い合わせフォームです。当社へのご質問、ご相談、ご要望はこちらのフォームをご利用ください。",
+  "notice": "なお、店舗の施術・サービスに関するご予約やご質問、ご相談・ご要望等については、誠に恐れ入りますが各店舗へ直接お問い合わせ下さりますよう、お願いいたします。",
+  "fields": [
+    { "name": "name", "label": "氏名", "type": "text", "required": true },
+    { "name": "email", "label": "メールアドレス", "type": "email", "required": true },
+    { "name": "tel", "label": "電話番号", "type": "tel", "required": false },
+    { "name": "subject", "label": "題名", "type": "text", "required": true },
+    { "name": "message", "label": "メッセージ本文", "type": "textarea", "required": true, "placeholder": "お問い合わせ内容をご入力ください" }
+  ],
+  "submitLabel": "送信する",
+  "disabledNote": "送信機能は現在準備中です。フォームからの送信はまだご利用いただけません。"
+}
