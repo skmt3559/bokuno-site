@@ -11,3 +11,5 @@
 - リンクは必ず `url()` を通す（GitHub Pages のサブパス配信に対応するため）。
 - お問い合わせフォームは見た目のみ。依頼があるまで送信先を付けない。
 - 変更後は `node build.mjs` が通ることと、`npm run dev` でスマホ幅（375px）と PC 幅の表示を確認する。
+- `editor/` は手動編集用の画面（`/__editor/`、`npm run dev` のときだけ動く）。`content/*.json` をそのままフォームにしているので、
+  `content/` にキーを足したら `editor/editor.js` の `LABELS` / `SECTIONS` に日本語の名前を足す。公開物（`dist/`）には入れない。

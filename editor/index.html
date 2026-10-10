@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bokuno サイト編集</title>
+<link rel="stylesheet" href="editor.css">
+</head>
+<body>
+<header class="bar">
+  <p class="bar__title">bokuno <span>サイト編集</span></p>
+  <nav class="tabs" id="tabs" aria-label="編集するページ"></nav>
+  <div class="bar__actions">
+    <span class="save-state" id="save-state">読み込み中…</span>
+    <button class="btn btn--ghost" id="discard" type="button" hidden>変更を取り消す</button>
+    <button class="btn btn--primary" id="publish" type="button" disabled>公開する</button>
+  </div>
+</header>
+<div class="layout">
+  <section class="form-pane" id="form-pane" aria-label="編集フォーム">
+    <div class="form-pane__tools">
+      <input class="search" id="search" type="search" placeholder="このページ内の文章を検索" aria-label="このページ内の文章を検索">
+      <p class="hint">右の画面の文章や写真をクリックすると、その編集欄に移動します。</p>
+    </div>
+    <div id="form"></div>
+  </section>
+  <section class="preview-pane" aria-label="プレビュー">
+    <div class="preview-pane__tools">
+      <div class="seg" role="group" aria-label="表示幅">
+        <button type="button" data-device="mobile" class="is-on">スマホ</button>
+        <button type="button" data-device="desktop">PC</button>
+      </div>
+      <span class="preview-pane__path" id="preview-path"></span>
+      <a class="preview-pane__open" id="preview-open" target="_blank" rel="noopener">別タブで開く</a>
+    </div>
+    <div class="preview-pane__stage" id="stage">
+      <iframe id="preview" title="プレビュー"></iframe>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<script src="editor.js" type="module"></script>
+</body>
+</html>
