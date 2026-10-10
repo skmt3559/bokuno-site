@@ -1,6 +1,6 @@
 #!/bin/zsh
 # ダブルクリックで編集画面を開く。このウィンドウを閉じると編集画面も終了します。
-cd "$(dirname "$0")"
+cd "${0:A:h}"  # デスクトップのショートカットから開いても、本体のフォルダで動かす
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 URL="http://localhost:4321/__editor/"
 if curl -s -o /dev/null "$URL"; then
