@@ -421,7 +421,7 @@ ${shop.reserveUrl ? `<a class="sticky-reserve" href="${esc(shop.reserveUrl)}" ta
 ${recruit.story
   .map(
     (block, i) => `<section class="section${i % 2 === 0 ? " section--tint" : ""}"><div class="wrap wrap--narrow">
-    ${heading(i === 0 ? "Work Style" : "Vision", block.heading)}${block.image ? photo(block.image, block.heading, "prose__photo") : ""}<div class="prose">${block.paragraphs.map((p) => `<p>${br(p)}</p>`).join("")}</div></div></section>`
+    ${heading(block.en || "", block.heading)}${block.image ? photo(block.image, block.heading, "prose__photo") : ""}<div class="prose">${block.paragraphs.map((p) => `<p>${br(p)}</p>`).join("")}</div></div></section>`
   )
   .join("")}
 <section class="section${recruit.story.length % 2 === 0 ? " section--tint" : ""}">
