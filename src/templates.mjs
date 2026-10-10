@@ -7,6 +7,8 @@ const esc = (s) =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 const br = (s) => esc(s).replace(/\n/g, "<br>");
+// **強調** と書いた部分にマーカーを引く
+const rich = (s) => br(s).replace(/\*\*(.+?)\*\*/g, '<em class="mark">$1</em>');
 const telHref = (tel) => `tel:${String(tel).replace(/[^0-9+]/g, "")}`;
 
 export function renderSite(content, base = "") {
@@ -414,8 +416,16 @@ ${shop.reserveUrl ? `<a class="sticky-reserve" href="${esc(shop.reserveUrl)}" ta
     body: `${pageHeader(recruit.en, recruit.title, [{ label: recruit.title }])}
 <section class="section">
   <div class="wrap split">
-    <div class="split__text"><h2 class="statement">${br(recruit.lead.heading)}</h2><p>${br(recruit.lead.text)}</p></div>
+    <div class="split__text"><p class="heading__en">Message</p><h2 class="statement">${br(recruit.lead.heading)}</h2><p class="message__intro">${rich(recruit.lead.intro)}</p></div>
     ${photo(recruit.lead.image, "働くスタッフのイメージ", "split__photo")}
+  </div>
+  <div class="wrap wrap--narrow message">
+    <div class="message__body">${recruit.lead.paragraphs.map((p) => `<p>${rich(p)}</p>`).join("")}</div>
+    ${
+      recruit.lead.closing
+        ? `<div class="message__closing"><p class="message__statement">${br(recruit.lead.closing.statement)}</p><p>${rich(recruit.lead.closing.text)}</p></div>`
+        : ""
+    }
   </div>
 </section>
 ${recruit.story

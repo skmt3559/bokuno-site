@@ -695,6 +695,70 @@ a {
 .spec dd {
   line-height: 1.9;
 }
+.mark {
+  font-style: normal;
+  font-weight: 500;
+  background: linear-gradient(transparent 64%, rgba(151, 128, 95, 0.26) 0);
+}
+.split__text > .heading__en {
+  margin-bottom: 12px;
+}
+.message__intro {
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 2.1;
+  letter-spacing: 0.06em;
+}
+.message {
+  margin-top: 56px;
+}
+.message__body {
+  padding-left: 22px;
+  border-left: 1px solid var(--accent);
+}
+.message__body p + p {
+  margin-top: 1.6em;
+}
+.message__closing {
+  margin-top: 56px;
+  padding-block: 40px;
+  border-block: 1px solid var(--line);
+  text-align: center;
+}
+.message__statement {
+  margin-bottom: 20px;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(20px, 5.2vw, 28px);
+  line-height: 1.8;
+  letter-spacing: 0.12em;
+}
+.message__closing p:last-child {
+  max-width: 30em;
+  margin-inline: auto;
+  font-size: 14px;
+  color: var(--muted);
+}
+@media (max-width: 599px) {
+  .message__closing p:last-child {
+    text-align: left;
+  }
+}
+@media (min-width: 960px) {
+  .message {
+    margin-top: 96px;
+  }
+  .message__intro {
+    font-size: 18px;
+  }
+  .message__body {
+    padding-left: 40px;
+  }
+  .message__closing {
+    margin-top: 80px;
+    padding-block: 56px;
+  }
+}
 .prose p + p {
   margin-top: 1.4em;
 }
