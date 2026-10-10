@@ -131,6 +131,11 @@ a {
   flex-direction: column;
   line-height: 1;
 }
+.logo__img {
+  width: auto;
+  height: 46px;
+  mix-blend-mode: multiply;
+}
 .logo__mark {
   font-family: var(--latin);
   font-size: 30px;
@@ -319,7 +324,9 @@ a {
   overflow: hidden;
   background: var(--tint);
 }
-.photo img {
+.photo img,
+.photo video {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -551,6 +558,51 @@ a {
 .flow {
   margin-bottom: 40px;
 }
+.flow__photo {
+  max-width: 320px;
+  margin-top: 20px;
+  aspect-ratio: 3 / 4;
+}
+.before-after {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.before-after__photo {
+  aspect-ratio: 3 / 4;
+  margin-bottom: 12px;
+}
+.before-after p:last-child {
+  font-size: 13px;
+  line-height: 1.8;
+}
+.sub-heading {
+  margin: 64px 0 24px;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 19px;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+.gallery {
+  display: grid;
+  gap: 16px;
+}
+.gallery__photo {
+  aspect-ratio: 2302 / 1450;
+}
+.feature__photo {
+  aspect-ratio: 1;
+}
+.prose__photo,
+.company__photo {
+  aspect-ratio: 16 / 9;
+  margin-bottom: 36px;
+}
+.split__photo {
+  aspect-ratio: 4 / 3;
+}
 .flow li {
   display: grid;
   gap: 4px;
@@ -694,7 +746,8 @@ a {
   border-bottom: 1px solid var(--line);
 }
 .shop-card__photo {
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 3;
+  align-self: start;
 }
 .shop-card__pref {
   font-size: 11px;
@@ -911,9 +964,16 @@ main:has(.sticky-reserve) {
     gap: 32px;
   }
   .menu-grid,
-  .shop-grid {
+  .shop-grid,
+  .gallery {
     grid-template-columns: repeat(2, 1fr);
     gap: 32px 28px;
+  }
+  .gallery {
+    gap: 20px;
+  }
+  .before-after {
+    gap: 32px;
   }
   .service-list {
     grid-template-columns: repeat(4, 1fr);
@@ -1005,6 +1065,9 @@ main:has(.sticky-reserve) {
   }
   .logo__mark {
     font-size: 36px;
+  }
+  .logo__img {
+    height: 58px;
   }
   .hero {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

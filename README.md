@@ -18,6 +18,8 @@
 | 写真 | `public/images/` に置き、各データの `image` に `/images/ファイル名` を書く |
 
 `image` が空のところは、仮の色面が表示されます。
+トップの動画は `public/videos/` に置き、`content/home.json` の `hero.video` で指定します。ロゴは `content/site.json` の `logo` です。
+現在の写真・動画・ロゴは、旧サイト（bokuno-tuyatuya.com）に載っていたものを軽量化して入れています。
 
 ### 店舗データ（shops.json）
 

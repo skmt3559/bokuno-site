@@ -25,6 +25,11 @@ export function renderSite(content, base = "") {
       ? `<div class="photo ${cls}"><img src="${esc(url(image))}" alt="${esc(alt)}" loading="lazy"></div>`
       : `<div class="photo photo--empty ${cls}" role="img" aria-label="${esc(alt)}（写真準備中）"><span>Photo</span></div>`;
 
+  const logoMark = () =>
+    site.logo
+      ? `<img class="logo__img" src="${esc(url(site.logo))}" alt="${esc(site.fullName)}" width="240" height="117">`
+      : `<span class="logo__mark">${esc(site.name)}</span><span class="logo__sub">${esc(site.tagline)}</span>`;
+
   const heading = (en, ja, tag = "h2") =>
     `<div class="heading"><p class="heading__en">${esc(en)}</p><${tag} class="heading__ja">${br(ja)}</${tag}></div>`;
 
@@ -96,7 +101,7 @@ ${site.noindex ? '<meta name="robots" content="noindex, nofollow">' : ""}
 <a class="skip" href="#main">本文へ移動</a>
 <header class="site-header" data-header>
   <div class="site-header__inner">
-    <a class="logo" href="${url("/")}" aria-label="${esc(site.fullName)} ホーム"><span class="logo__mark">${esc(site.name)}</span><span class="logo__sub">${esc(site.tagline)}</span></a>
+    <a class="logo" href="${url("/")}" aria-label="${esc(site.fullName)} ホーム">${logoMark()}</a>
     <button class="menu-btn" type="button" aria-expanded="false" aria-controls="global-nav" data-menu-btn><span class="menu-btn__bars" aria-hidden="true"></span><span class="menu-btn__label">Menu</span></button>
     <nav class="global-nav" id="global-nav" aria-label="メインメニュー" data-menu>
       <ul>${site.nav
@@ -116,7 +121,7 @@ ${body}
   <div class="wrap">
     <div class="site-footer__top">
       <div>
-        <p class="logo logo--footer"><span class="logo__mark">${esc(site.name)}</span><span class="logo__sub">${esc(site.tagline)}</span></p>
+        <p class="logo logo--footer">${logoMark()}</p>
         ${site.instagram ? `<p class="site-footer__sns"><a href="${esc(site.instagram)}" target="_blank" rel="noopener">Instagram</a></p>` : ""}
       </div>
       <ul class="site-footer__nav">${site.nav.map((n) => `<li><a href="${url(n.href)}">${esc(n.label)}</a></li>`).join("")}</ul>
@@ -153,7 +158,11 @@ ${body}
     <p class="hero__lead">${br(home.hero.text)}</p>
     <div class="hero__actions">${button("店舗を探して予約する", "/shoplist/", { variant: "solid" })}${button(home.intro.link.label, home.intro.link.href)}</div>
   </div>
-  ${photo(home.hero.image, "サロンのイメージ", "hero__photo")}
+  ${
+    home.hero.video
+      ? `<div class="photo hero__photo"><video src="${esc(url(home.hero.video))}"${home.hero.image ? ` poster="${esc(url(home.hero.image))}"` : ""} autoplay muted loop playsinline preload="metadata" aria-label="サロンのイメージ動画"></video></div>`
+      : photo(home.hero.image, "サロンのイメージ", "hero__photo")
+  }
 </section>
 
 <section class="section">
@@ -248,6 +257,13 @@ ${reserveCta()}`,
       .map((item) => `<li class="feature">${photo(item.image, item.title, "feature__photo")}<h3 class="feature__title">${esc(item.title)}</h3><p>${br(item.text)}</p></li>`)
       .join("")}</ul>
     ${kaizen.results.items.some((i) => !i.image) && kaizen.results.note ? `<p class="note center">${esc(kaizen.results.note)}</p>` : ""}
+    ${
+      kaizen.results.gallery?.images?.length
+        ? `<h3 class="sub-heading">${esc(kaizen.results.gallery.heading)}</h3><ul class="gallery">${kaizen.results.gallery.images
+            .map((src, i) => `<li>${photo(src, `${kaizen.results.gallery.heading} ${i + 1}`, "gallery__photo")}</li>`)
+            .join("")}</ul>`
+        : ""
+    }
   </div>
 </section>
 <section class="section section--tint">
@@ -255,8 +271,19 @@ ${reserveCta()}`,
     ${heading("Flow", kaizen.flow.heading)}
     <p class="lead center">${br(kaizen.flow.text)}</p>
     <ol class="flow">${kaizen.flow.steps
-      .map((s, i) => `<li><p class="flow__no">Step ${i + 1}</p><div><h3 class="feature__title">${esc(s.title)}</h3><p>${br(s.text)}</p></div></li>`)
+      .map(
+        (s, i) =>
+          `<li><p class="flow__no">Step ${i + 1}</p><div><h3 class="feature__title">${esc(s.title)}</h3><p>${br(s.text)}</p>${s.image ? photo(s.image, s.title, "flow__photo") : ""}</div></li>`
+      )
       .join("")}</ol>
+    ${
+      kaizen.flow.beforeAfter
+        ? `<ul class="before-after">${["before", "after"]
+            .map((key) => kaizen.flow.beforeAfter[key])
+            .map((b) => `<li>${photo(b.image, b.label, "before-after__photo")}<p class="feature__no">${esc(b.label)}</p><p>${br(b.text)}</p></li>`)
+            .join("")}</ul>`
+        : ""
+    }
     ${kaizen.flow.voice ? `<p class="lead">${br(kaizen.flow.voice)}</p>` : ""}
   </div>
 </section>
@@ -394,7 +421,7 @@ ${shop.reserveUrl ? `<a class="sticky-reserve" href="${esc(shop.reserveUrl)}" ta
 ${recruit.story
   .map(
     (block, i) => `<section class="section${i % 2 === 0 ? " section--tint" : ""}"><div class="wrap wrap--narrow">
-    ${heading(i === 0 ? "Work Style" : "Vision", block.heading)}<div class="prose">${block.paragraphs.map((p) => `<p>${br(p)}</p>`).join("")}</div></div></section>`
+    ${heading(i === 0 ? "Work Style" : "Vision", block.heading)}${block.image ? photo(block.image, block.heading, "prose__photo") : ""}<div class="prose">${block.paragraphs.map((p) => `<p>${br(p)}</p>`).join("")}</div></div></section>`
   )
   .join("")}
 <section class="section${recruit.story.length % 2 === 0 ? " section--tint" : ""}">
@@ -454,7 +481,7 @@ ${applyBlock()}`,
     path: "/company/",
     body: `${pageHeader(company.en, company.title, [{ label: company.title }])}
 <section class="section">
-  <div class="wrap wrap--narrow">${table(company.rows)}</div>
+  <div class="wrap wrap--narrow">${company.image ? photo(company.image, company.title, "company__photo") : ""}${table(company.rows)}</div>
 </section>
 <section class="section section--tint">
   <div class="wrap">
