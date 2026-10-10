@@ -431,7 +431,10 @@ ${shop.reserveUrl ? `<a class="sticky-reserve" href="${esc(shop.reserveUrl)}" ta
 ${recruit.story
   .map(
     (block, i) => `<section class="section${i % 2 === 0 ? " section--tint" : ""}"><div class="wrap wrap--narrow">
-    ${heading(block.en || "", block.heading)}${block.image ? photo(block.image, block.heading, "prose__photo") : ""}<div class="prose">${block.paragraphs.map((p) => `<p>${br(p)}</p>`).join("")}</div></div></section>`
+    ${heading(block.en || "", block.heading)}${block.image ? photo(block.image, block.heading, "prose__photo") : ""}<div class="prose">${block.paragraphs.map((p) => `<p>${rich(p)}</p>`).join("")}</div>
+    ${block.statement ? `<div class="message__closing"><p class="message__statement">${br(block.statement.text)}</p>${block.statement.sub ? `<p>${rich(block.statement.sub)}</p>` : ""}</div>` : ""}
+    ${block.voices?.length ? `<ul class="voices">${block.voices.map((v) => `<li>${esc(v)}</li>`).join("")}</ul>` : ""}
+    ${block.closing ? `<p class="voices__closing">${rich(block.closing)}</p>` : ""}</div></section>`
   )
   .join("")}
 <section class="section${recruit.story.length % 2 === 0 ? " section--tint" : ""}">

@@ -720,9 +720,34 @@ a {
   margin-top: 1.6em;
 }
 .message__closing {
-  margin-top: 56px;
-  padding-block: 40px;
-  border-block: 1px solid var(--line);
+  margin-top: 48px;
+  padding: 40px 24px;
+  background: var(--surface);
+  border-top: 1px solid var(--accent);
+  text-align: center;
+}
+.voices {
+  display: grid;
+  gap: 12px;
+  margin-top: 48px;
+}
+.voices li {
+  display: grid;
+  place-items: center;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  background: rgba(255, 253, 250, 0.5);
+  font-family: var(--serif);
+  line-height: 1.8;
+  text-align: center;
+}
+.voices__closing {
+  text-wrap: balance;
+  margin-top: 28px;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: 0.08em;
   text-align: center;
 }
 .message__statement {
@@ -755,8 +780,21 @@ a {
     padding-left: 40px;
   }
   .message__closing {
-    margin-top: 80px;
-    padding-block: 56px;
+    margin-top: 64px;
+    padding: 56px 40px;
+  }
+  .voices {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 64px;
+  }
+  .voices li {
+    padding: 28px 16px;
+    font-size: 15px;
+  }
+  .voices__closing {
+    margin-top: 40px;
+    font-size: 19px;
   }
 }
 .prose p + p {
