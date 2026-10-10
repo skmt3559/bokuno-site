@@ -263,8 +263,7 @@ function renderMedia(value, path, key) {
     if (!f) return;
     pathText.textContent = "アップロード中…";
     try {
-      const { blob, name } = await prepare(f);
-      const { path: saved } = await api("POST", `upload?name=${encodeURIComponent(name)}`, blob);
+      const saved = await uploadFile(f);
       show(saved);
       setAt(path, saved);
     } catch (e) {
@@ -275,14 +274,29 @@ function renderMedia(value, path, key) {
   pick.addEventListener("click", () => file.click());
   file.addEventListener("change", () => upload(file.files[0]));
   clear.addEventListener("click", () => (show(""), setAt(path, "")));
-  box.addEventListener("dragover", (e) => (e.preventDefault(), box.classList.add("is-over")));
-  box.addEventListener("dragleave", () => box.classList.remove("is-over"));
-  box.addEventListener("drop", (e) => (e.preventDefault(), box.classList.remove("is-over"), upload(e.dataTransfer.files[0])));
   thumb.addEventListener("click", () => showInPreview(getAt(path), true));
   show(value);
   const label = typeof path.at(-1) === "number" ? `${path.at(-1) + 1}枚目` : LABELS[key] || key;
-  return fieldWrap(path, key, el("span", { className: "field__label", textContent: label }), box);
+  const field = fieldWrap(path, key, el("span", { className: "field__label", textContent: label }), box);
+  field.addEventListener("dragover", (e) => hasFiles(e) && (e.preventDefault(), e.stopPropagation(), box.classList.add("is-over")));
+  field.addEventListener("dragleave", () => box.classList.remove("is-over"));
+  field.addEventListener("drop", (e) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    box.classList.remove("is-over");
+    const f = droppedFiles(e)[0];
+    f ? upload(f) : toast("この種類のファイルは使えません（jpg / png / webp / gif / mp4）", { error: true });
+  });
+  return field;
 }
+
+async function uploadFile(f) {
+  const { blob, name } = await prepare(f);
+  return (await api("POST", `upload?name=${encodeURIComponent(name)}`, blob)).path;
+}
+const droppedFiles = (e) => [...(e.dataTransfer?.files || [])].filter((f) => /^(image\/(jpeg|png|webp|gif)|video\/mp4)$/.test(f.type));
+const hasFiles = (e) => [...(e.dataTransfer?.types || [])].includes("Files");
 
 // 大きな写真は、表示に十分な大きさ（長辺2000px）のJPEGに縮めてから送る
 async function prepare(f) {
@@ -342,6 +356,28 @@ function renderList(list, path, bare = false) {
     });
     wrap.append(details);
   });
+
+  if (key === "images") {
+    const picker = el("input", { type: "file", accept: "image/jpeg,image/png,image/webp,image/gif", multiple: true, hidden: true });
+    const zone = el("button", { type: "button", className: "dropzone", textContent: "＋ 写真を追加（ここにドラッグ＆ドロップ、またはクリックして選ぶ・複数可）" });
+    const addFiles = async (files) => {
+      if (!files.length) return;
+      zone.textContent = `アップロード中…（${files.length}枚）`;
+      try {
+        for (const f of files) list.push(await uploadFile(f));
+      } catch (e) {
+        toast(e.message, { error: true });
+      }
+      changed();
+    };
+    zone.addEventListener("click", () => picker.click());
+    picker.addEventListener("change", () => addFiles([...picker.files]));
+    wrap.addEventListener("dragover", (e) => hasFiles(e) && (e.preventDefault(), zone.classList.add("is-over")));
+    wrap.addEventListener("dragleave", () => zone.classList.remove("is-over"));
+    wrap.addEventListener("drop", (e) => hasFiles(e) && (e.preventDefault(), zone.classList.remove("is-over"), addFiles(droppedFiles(e).filter((f) => f.type.startsWith("image/")))));
+    wrap.append(zone, picker);
+    return wrap;
+  }
 
   const add = el("button", { type: "button", className: "btn btn--small list__add", textContent: state.current === "shops" && !path.length ? "＋ 店舗を追加" : "＋ 追加" });
   add.addEventListener("click", () => {
@@ -456,6 +492,43 @@ preview.addEventListener("load", () => {
     }
   }
 
+  // 右の画面の写真に、ファイルを直接ドロップして差し替える
+  let over;
+  const mark = (node) => {
+    if (over === node) return;
+    if (over) over.style.outline = over.style.outlineOffset = "";
+    over = node;
+    if (over) (over.style.outline = "4px dashed rgba(151,128,95,.9)"), (over.style.outlineOffset = "-4px");
+  };
+  doc.addEventListener("dragover", (e) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    mark(e.target.closest?.(".photo") || (e.target.matches?.("img, video") ? e.target : null));
+  });
+  doc.addEventListener("dragleave", (e) => e.relatedTarget || mark(null));
+  doc.addEventListener("drop", async (e) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    const target = over;
+    mark(null);
+    document.body.classList.remove("is-dragging");
+    const f = droppedFiles(e)[0];
+    const hit = target && locate(target, path);
+    if (!f) return toast("この種類のファイルは使えません（jpg / png / webp / gif / mp4）", { error: true });
+    if (!hit) return toast("ここには直接ドロップできません。左の欄の写真のところにドロップしてください。", { error: true });
+    toast("アップロード中…", { keep: true });
+    try {
+      const saved = await uploadFile(f);
+      hit.path.slice(0, -1).reduce((o, k) => o[k], state.files[hit.file])[hit.path.at(-1)] = saved;
+      scheduleSave(hit.file);
+      if (hit.file === state.current) renderForm();
+      focusField(hit.file, hit.path);
+      toast("写真を差し替えました。");
+    } catch (err) {
+      toast(err.message, { error: true });
+    }
+  });
+
   doc.addEventListener(
     "click",
     (e) => {
@@ -556,6 +629,15 @@ $("discard").addEventListener("click", async () => {
   }
 });
 
+let dragDepth = 0;
+window.addEventListener("dragenter", (e) => hasFiles(e) && (dragDepth++, document.body.classList.add("is-dragging")));
+window.addEventListener("dragleave", (e) => hasFiles(e) && --dragDepth <= 0 && ((dragDepth = 0), document.body.classList.remove("is-dragging")));
+window.addEventListener("dragover", (e) => hasFiles(e) && e.preventDefault());
+window.addEventListener("drop", (e) => {
+  dragDepth = 0;
+  document.body.classList.remove("is-dragging");
+  if (hasFiles(e)) e.preventDefault();
+});
 document.addEventListener("toggle", (e) => e.target.open && autosizeIn(e.target), true);
 window.addEventListener("beforeunload", (e) => state.pending.size && e.preventDefault());
 

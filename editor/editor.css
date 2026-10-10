@@ -282,6 +282,31 @@ select {
   border-color: var(--accent);
   background: var(--accent-soft);
 }
+.is-dragging .image,
+.is-dragging .dropzone {
+  border-color: var(--accent);
+  background: #fbf6ec;
+}
+.is-dragging .image.is-over,
+.dropzone.is-over {
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 3px rgba(151, 128, 95, 0.45);
+}
+.dropzone {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 18px 12px;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+.dropzone:hover {
+  border-color: var(--accent);
+}
 .image__thumb {
   flex: none;
   width: 96px;
