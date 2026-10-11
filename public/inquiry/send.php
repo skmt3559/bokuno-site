@@ -5,7 +5,9 @@ declare(strict_types=1);
 
 const TO = 'info@bokuno-tuyatuya.com';
 const FROM = 'info@bokuno-tuyatuya.com'; // 迷惑メール扱いを避けるため、差出人はこのドメインのアドレスにする
-const LIMIT_PER_HOUR = 5;
+const LIMIT_PER_HOUR = 5;   // 同じ送信元から
+const LIMIT_PER_DAY = 200;  // サイト全体で（大量送信でメールボックスを埋められないように）
+const MAX_LINKS = 4;        // 本文中のURLがこれを超えるものは宣伝目的とみなす
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Robots-Tag: noindex');
@@ -49,6 +51,18 @@ if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
 if ($tel !== '' && !preg_match('/^[0-9+\-() ]{6,}$/', $tel)) {
     done(422, '電話番号をご確認ください。');
 }
+
+if (preg_match_all('~https?://|www\.~i', $message . ' ' . $subject . ' ' . $name) > MAX_LINKS) {
+    done(422, 'URLを多く含むメッセージは送信できません。URLを減らしてお試しください。');
+}
+
+// サイト全体の1日あたりの上限
+$dayLog = sys_get_temp_dir() . '/bokuno-inquiry-day-' . date('Ymd');
+$today = (int) @file_get_contents($dayLog);
+if ($today >= LIMIT_PER_DAY) {
+    done(429, 'ただいま送信が混み合っています。時間をおいてお試しください。');
+}
+@file_put_contents($dayLog, (string) ($today + 1), LOCK_EX);
 
 // 同じ送信元からの連続送信を抑える
 $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';

@@ -4,6 +4,15 @@ ErrorDocument 404 /404.html
 Options -Indexes
 AddDefaultCharset UTF-8
 
+# ブラウザ側の基本的な防御（種類の誤認識、他サイトへの埋め込み、通信の盗み見への対策）
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+Header always set Strict-Transport-Security "max-age=15552000" env=HTTPS
+</IfModule>
+
 # ページ本体はサーバー側（ロリポップのアクセラレータ）にもブラウザにも溜めない。更新をすぐ反映させるため
 <IfModule mod_headers.c>
 <FilesMatch "\.(html|xml|txt)$">
@@ -38,6 +47,15 @@ RewriteCond %{HTTPS} !on
 RewriteRule ^ https://bokuno-tuyatuya.com%{REQUEST_URI} [R=301,L]
 RewriteCond %{HTTP_HOST} ^www\.bokuno-tuyatuya\.com$ [NC]
 RewriteRule ^ https://bokuno-tuyatuya.com%{REQUEST_URI} [R=301,L]
+
+# レンタルサーバーの初期アドレス（○○.floppy.jp/bokuno-tuyatuya.com/…）で開かれたら、正式なアドレスへ送る
+RewriteCond %{HTTP_HOST} !^(www\.)?bokuno-tuyatuya\.com$ [NC]
+RewriteCond %{REQUEST_URI} ^/bokuno-tuyatuya\.com/?(.*)$
+RewriteRule ^ https://bokuno-tuyatuya.com/%1 [R=301,L]
+
+# お問い合わせの送信プログラム以外の PHP は動かさない（万一ファイルを置かれても実行させない）
+RewriteCond %{REQUEST_URI} !/inquiry/send\.php$
+RewriteRule \.(php|phtml|phar|cgi|pl)$ - [F,L,NC]
 
 # 旧サイト（WordPress）にあった応募フォームのURLは、求人ページへ案内する
 RewriteRule ^recruit/recruit-form/?$ /recruit/ [R=301,L]
