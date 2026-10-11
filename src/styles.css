@@ -797,6 +797,19 @@ a {
     font-size: 19px;
   }
 }
+.spec-group + .spec-group {
+  margin-top: 48px;
+}
+.spec-group__title {
+  padding-bottom: 12px;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: 0.12em;
+}
+.spec-group .spec {
+  border-top-color: var(--ink);
+}
 .prose p + p {
   margin-top: 1.4em;
 }

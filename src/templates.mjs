@@ -482,8 +482,13 @@ ${applyBlock()}`,
   </div>
 </section>
 <section class="section section--tint">
-  <div class="wrap wrap--narrow">${heading("Requirements", recruit.shopPage.conditionsHeading)}
-    <p class="note center">${esc(recruit.shopPage.conditionsNote)}</p>${table(recruit.conditions.rows)}
+  <div class="wrap wrap--narrow">${
+    shop.recruitStandard && recruit.conditionsStandard
+      ? `${heading("Requirements", recruit.conditionsStandard.heading)}${recruit.conditionsStandard.groups
+          .map((g) => `<section class="spec-group"><h3 class="spec-group__title">${esc(g.heading)}</h3>${table(g.rows)}</section>`)
+          .join("")}`
+      : `${heading("Requirements", recruit.shopPage.conditionsHeading)}<p class="note center">${esc(recruit.shopPage.conditionsNote)}</p>${table(recruit.conditions.rows)}`
+  }
     <p class="center">${button("bokunoの働き方を見る", "/recruit/")}</p></div>
 </section>
 ${applyBlock()}`,
