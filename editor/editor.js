@@ -54,6 +54,7 @@ const LABELS = {
   reserveUrl: "予約ページのURL", tel: "電話", address: "住所", access: "アクセス", seats: "席数", hours: "営業時間", closed: "定休日",
   mapEmbed: "Googleマップの埋め込みURL", recruiting: "求人を募集中", points: "この店舗のこだわり", notice: "注意書き", fields: "入力項目",
   submitLabel: "送信ボタンの文字", disabledNote: "送信できない旨の案内", placeholder: "入力例", required: "必須", leadTemplate: "紹介文",
+  qr: "QRコードの画像", qrNote: "QRコードの説明",
   workplaceHeading: "勤務店舗の見出し", conditionsHeading: "募集内容の見出し", conditionsNote: "募集内容の注記",
 };
 
@@ -78,7 +79,7 @@ const el = (tag, props = {}, ...children) => {
   return node;
 };
 const norm = (s) => String(s).replace(/\*\*/g, "").replace(/\s+/g, "");
-const isMedia = (key, value) => ["image", "logo", "video"].includes(key) || /^\/(images|videos)\//.test(value);
+const isMedia = (key, value) => ["image", "logo", "video", "qr"].includes(key) || /^\/(images|videos)\//.test(value);
 
 const state = { files: {}, current: "home", device: "mobile", timers: {}, pending: new Set() };
 const preview = $("preview");

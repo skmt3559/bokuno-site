@@ -57,7 +57,7 @@
       },
       {
         "label": "応募方法",
-        "value": "求人フォームよりご応募ください。\nその後、直接面接を行わせていただきます。"
+        "value": "LINE公式アカウントよりご応募ください。\nその後、直接面接を行わせていただきます。"
       }
     ]
   },
@@ -109,8 +109,11 @@
   "apply": {
     "heading": "ご応募について",
     "text": "bokunoで働いてみたい方、ご応募をお待ちしております。",
-    "button": "応募フォームへ",
-    "url": "https://bokuno-tuyatuya.com/recruit/recruit-form/"
+    "button": "LINEで応募する",
+    "url": "https://line.me/R/ti/p/@415rglmr",
+    "note": "LINE公式アカウントを友だち追加のうえ、トークでご連絡ください。",
+    "qr": "/images/recruit/line-qr.png",
+    "qrNote": "パソコンでご覧の方は、スマートフォンでQRコードを読み取ってください。"
   },
   "shopPage": {
     "leadTemplate": "{name}では、美容師スタイリストを募集しています。",

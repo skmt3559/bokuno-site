@@ -407,7 +407,9 @@ ${shop.reserveUrl ? `<a class="sticky-reserve" href="${esc(shop.reserveUrl)}" ta
 
   const applyBlock = () =>
     `<section class="cta"><div class="wrap cta__inner">${heading("Entry", recruit.apply.heading)}<p class="cta__text">${br(recruit.apply.text)}</p>
-    ${recruit.apply.url ? button(recruit.apply.button, recruit.apply.url, { variant: "solid", external: true }) : ""}</div></section>`;
+    ${recruit.apply.url ? button(recruit.apply.button, recruit.apply.url, { variant: "solid", external: true }) : ""}
+    ${recruit.apply.note ? `<p class="cta__note">${br(recruit.apply.note)}</p>` : ""}
+    ${recruit.apply.qr ? `<div class="cta__qr"><img src="${esc(url(recruit.apply.qr))}" alt="${esc(recruit.apply.button)}のQRコード" width="160" height="160" loading="lazy">${recruit.apply.qrNote ? `<p>${br(recruit.apply.qrNote)}</p>` : ""}</div>` : ""}</div></section>`;
 
   pages["recruit/index.html"] = layout({
     title: recruit.title,
@@ -431,7 +433,7 @@ ${shop.reserveUrl ? `<a class="sticky-reserve" href="${esc(shop.reserveUrl)}" ta
 ${recruit.story
   .map(
     (block, i) => `<section class="section${i % 2 === 0 ? " section--tint" : ""}"><div class="wrap wrap--narrow">
-    ${heading(block.en || "", block.heading)}${block.image ? photo(block.image, block.heading, "prose__photo") : ""}<div class="prose">${block.paragraphs.map((p) => `<p>${rich(p)}</p>`).join("")}</div>
+    ${heading(block.en || "", block.heading)}${block.image ? photo(block.image, block.heading, "prose__photo") : ""}<div class="prose">${block.paragraphs.filter((p) => p.trim()).map((p) => `<p>${rich(p)}</p>`).join("")}</div>
     ${block.statement ? `<div class="message__closing"><p class="message__statement">${br(block.statement.text)}</p>${block.statement.sub ? `<p>${rich(block.statement.sub)}</p>` : ""}</div>` : ""}
     ${block.voices?.length ? `<ul class="voices">${block.voices.map((v) => `<li>${esc(v)}</li>`).join("")}</ul>` : ""}
     ${block.closing ? `<p class="voices__closing">${rich(block.closing)}</p>` : ""}</div></section>`

@@ -942,6 +942,37 @@ main:has(.sticky-reserve) {
   max-width: 36em;
   margin: 0 auto 32px;
 }
+.cta__note {
+  margin-top: 16px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+/* QRコードはパソコン向け。スマホではボタンを押せば済むので出さない */
+.cta__qr {
+  display: none;
+}
+@media (min-width: 960px) {
+  .cta__qr {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 48px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(247, 244, 239, 0.2);
+    text-align: left;
+  }
+  .cta__qr img {
+    width: 132px;
+    height: 132px;
+    padding: 8px;
+    background: #fff;
+  }
+  .cta__qr p {
+    max-width: 18em;
+    font-size: 13px;
+  }
+}
 .cta .btn--solid {
   background: var(--bg);
   color: var(--ink);
