@@ -44,7 +44,25 @@ export function renderSite(content, base = "", { noindex = false } = {}) {
       .map((r) => `<div class="spec__row"><dt>${esc(r.label)}</dt><dd>${r.html || br(r.value)}</dd></div>`)
       .join("")}</dl>`;
 
+  // 検索エンジン向けの構造化データ（JSON-LD）
+  const origin = (site.url || "").replace(/\/$/, "");
+  const abs = (path) => (/^https?:/.test(path) ? path : origin + path);
+  const ld = (data) => `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", ...data }).replace(/</g, "\\u003c")}</script>`;
+  const companyName = company.rows[0]?.value?.split("（")[0] || site.name;
+  const organization = { "@type": "Organization", name: companyName, url: abs("/"), logo: site.logo ? abs(site.logo) : undefined, sameAs: site.instagram ? [site.instagram] : undefined };
+  const postalAddress = (shop) => ({
+    "@type": "PostalAddress",
+    postalCode: shop.address.match(/〒\s*(\d{3}-\d{4})/)?.[1],
+    addressRegion: shop.prefecture,
+    streetAddress: shop.address.replace(/〒\s*\d{3}-\d{4}\s*/, "").replace(/（.*?）/g, "").trim(),
+    addressCountry: "JP",
+  });
+  const rowsHtml = (rows) => rows.filter((r) => r.value).map((r) => `<p><strong>${esc(r.label)}</strong><br>${br(r.value)}</p>`).join("");
+
+  // 直前に描いたパンくずを覚えておき、layout がそのページの構造化データにする
+  let lastTrail = null;
   const breadcrumb = (trail) =>
+    (lastTrail = trail) &&
     `<nav class="breadcrumb" aria-label="パンくずリスト"><ol><li><a href="${url("/")}">ホーム</a></li>${trail
       .map((t) => (t.href ? `<li><a href="${url(t.href)}">${esc(t.label)}</a></li>` : `<li aria-current="page">${esc(t.label)}</li>`))
       .join("")}</ol></nav>`;
@@ -82,18 +100,32 @@ export function renderSite(content, base = "", { noindex = false } = {}) {
     `<section class="cta"><div class="wrap cta__inner">${heading("Reservation", site.reserveCta.title)}
       <p class="cta__text">${br(site.reserveCta.text)}</p>${button(site.reserveCta.button, "/shoplist/", { variant: "solid" })}</div></section>`;
 
-  const layout = ({ title, description, path, body, isHome = false }) => `<!doctype html>
+  const layout = ({ title, seoTitle, description, path, body, image, jsonld = "", isHome = false }) => {
+    const trail = lastTrail;
+    lastTrail = null;
+    const crumbs = trail
+      ? ld({
+          "@type": "BreadcrumbList",
+          itemListElement: [{ label: "ホーム", href: "/" }, ...trail].map((t, i) => ({ "@type": "ListItem", position: i + 1, name: t.label, item: abs(t.href || path) })),
+        })
+      : "";
+    const pageTitle = seoTitle || (isHome ? title : `${title}｜${site.fullName}`);
+    return `<!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(isHome ? title : `${title}｜${site.fullName}`)}</title>
+<title>${esc(pageTitle)}</title>
 <meta name="description" content="${esc(description || site.description)}">
 ${noindex || site.noindex ? '<meta name="robots" content="noindex, nofollow">' : ""}
 ${site.url && path.endsWith("/") ? `<link rel="canonical" href="${esc(site.url.replace(/\/$/, "") + path)}">` : ""}
 <link rel="icon" href="${url("/favicon.png")}" type="image/png">
 <link rel="apple-touch-icon" href="${url("/apple-touch-icon.png")}">
-<meta property="og:title" content="${esc(title)}">
+<meta property="og:title" content="${esc(pageTitle)}">
+<meta property="og:site_name" content="${esc(site.fullName)}">
+<meta property="og:locale" content="ja_JP">
+${path.endsWith("/") ? `<meta property="og:url" content="${esc(abs(path))}">` : ""}
+${image || site.ogImage ? `<meta property="og:image" content="${esc(abs(image || site.ogImage))}">\n<meta name="twitter:card" content="summary_large_image">` : ""}
 <meta property="og:description" content="${esc(description || site.description)}">
 <meta property="og:type" content="website">
 <meta name="format-detection" content="telephone=no">
@@ -101,6 +133,8 @@ ${site.url && path.endsWith("/") ? `<link rel="canonical" href="${esc(site.url.r
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${url("/assets/styles.css")}">
+${isHome && home.hero.image ? `<link rel="preload" as="image" href="${esc(url(home.hero.image))}" fetchpriority="high">` : ""}
+${crumbs}${jsonld}
 </head>
 <body>
 <a class="skip" href="#main">本文へ移動</a>
@@ -146,6 +180,7 @@ ${body}
 </body>
 </html>
 `;
+  };
 
   // ---- ページ ----
 
@@ -153,8 +188,13 @@ ${body}
 
   pages["index.html"] = layout({
     title: home.title,
+    description: home.description,
     path: "/",
     isHome: true,
+    jsonld:
+      ld(organization) +
+      ld({ "@type": "WebSite", name: site.fullName, url: abs("/") }) +
+      ld({ "@type": "FAQPage", mainEntity: home.faq.items.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }),
     body: `
 <section class="hero">
   <div class="hero__text">
@@ -335,8 +375,9 @@ ${reserveCta()}`,
   });
 
   pages["shoplist/index.html"] = layout({
-    title: "店舗一覧",
-    description: `髪質改善美容室bokunoの店舗一覧（全${shops.length}店舗）。`,
+    title: site.shoplist?.title || "店舗一覧",
+    seoTitle: site.shoplist?.seoTitle,
+    description: site.shoplist?.description || `髪質改善美容室bokunoの店舗一覧（全${shops.length}店舗）。`,
     path: "/shoplist/",
     body: `${pageHeader("Salon", "店舗一覧", [{ label: "店舗一覧" }])}
 <section class="section">
@@ -353,7 +394,19 @@ ${reserveCta()}`,
     const meta = [shop.lead, shop.opened].filter(Boolean);
     pages[`shoplist/${shop.slug}/index.html`] = layout({
       title: shop.name,
-      description: [shop.name, shop.address].filter(Boolean).join("｜"),
+      seoTitle: shop.seoTitle,
+      description: shop.seoDescription || [shop.name, shop.address].filter(Boolean).join("｜"),
+      image: shop.image,
+      jsonld: ld({
+        "@type": "HairSalon",
+        name: shop.name,
+        url: abs(`/shoplist/${shop.slug}/`),
+        image: shop.image ? abs(shop.image) : undefined,
+        telephone: shop.tel || undefined,
+        address: shop.address ? postalAddress(shop) : undefined,
+        parentOrganization: organization,
+        potentialAction: shop.reserveUrl ? { "@type": "ReserveAction", target: shop.reserveUrl } : undefined,
+      }),
       path: `/shoplist/${shop.slug}/`,
       body: `<header class="page-header page-header--shop"><div class="wrap">
   ${breadcrumb([{ label: "店舗一覧", href: "/shoplist/" }, { label: shop.listName || shop.name }])}
@@ -416,7 +469,9 @@ ${shop.reserveUrl ? `<a class="sticky-reserve" href="${esc(shop.reserveUrl)}" ta
 
   pages["recruit/index.html"] = layout({
     title: recruit.title,
+    seoTitle: recruit.seoTitle,
     description: recruit.description,
+    image: recruit.lead.image,
     path: "/recruit/",
     body: `${pageHeader(recruit.en, recruit.title, [{ label: recruit.title }])}
 <section class="section">
@@ -459,7 +514,23 @@ ${applyBlock()}`,
     const label = shop.listName || shop.name;
     pages[`recruit/${shop.slug}/index.html`] = layout({
       title: `${label}の求人`,
-      description: `${shop.name}の美容師スタイリスト求人情報。`,
+      seoTitle: `${shop.name}の美容師・スタイリスト求人（業務委託）｜${site.fullName}`,
+      description: `${[shop.prefecture, shop.lead].filter(Boolean).join("・")}の美容師・スタイリスト求人。${shop.name}では、髪質改善・縮毛矯正を中心としたマンツーマン施術のスタイリストを業務委託で募集しています。`,
+      image: shop.image,
+      jsonld:
+        recruit.postedDate && shop.address
+          ? ld({
+              "@type": "JobPosting",
+              title: "美容師・スタイリスト（業務委託）",
+              description: rowsHtml(shop.recruitStandard && recruit.conditionsStandard ? recruit.conditionsStandard.groups.flatMap((g) => g.rows) : recruit.conditions.rows),
+              datePosted: recruit.postedDate,
+              employmentType: "CONTRACTOR",
+              hiringOrganization: organization,
+              jobLocation: { "@type": "Place", name: shop.name, address: postalAddress(shop) },
+              directApply: false,
+              url: abs(`/recruit/${shop.slug}/`),
+            })
+          : "",
       path: `/recruit/${shop.slug}/`,
       body: `<header class="page-header page-header--shop"><div class="wrap">
   ${breadcrumb([{ label: recruit.title, href: "/recruit/" }, { label }])}

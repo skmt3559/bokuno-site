@@ -40,6 +40,11 @@ const SECTIONS = {
   "company.areas": "店舗エリア",
   "contact.fields": "入力項目",
   "site.nav": "メニュー",
+  "site.shoplist": "店舗一覧ページ（タイトルと説明文）",
+  "site.ogImage": "SNSで共有されたときの画像（既定）",
+  "site.url": "サイトのURL",
+  "recruit.postedDate": "求人の掲載日（Googleの求人検索向け）",
+  "recruit.seoTitle": "検索結果に出るタイトル",
   "site.reserveCta": "予約の案内（各ページ下部）",
   "site.prefectureOrder": "都道府県の並び順",
 };
@@ -57,6 +62,8 @@ const LABELS = {
   submitLabel: "送信ボタンの文字", disabledNote: "送信できない旨の案内", placeholder: "入力例", required: "必須", leadTemplate: "紹介文",
   groups: "区分", recruitStandard: "標準の募集要項を使う",
   enabled: "フォームから送信できるようにする", sendingLabel: "送信中のボタンの文字", successMessage: "送信できたときの案内", errorMessage: "送信できなかったときの案内",
+  seoTitle: "検索結果に出るタイトル", seoDescription: "検索結果に出る説明文", ogImage: "SNSで共有されたときの画像", postedDate: "求人の掲載日",
+  shoplist: "店舗一覧ページ",
   qr: "QRコードの画像", qrNote: "QRコードの説明",
   workplaceHeading: "勤務店舗の見出し", conditionsHeading: "募集内容の見出し", conditionsNote: "募集内容の注記",
 };
@@ -68,6 +75,8 @@ const NOTES = {
   recruitStandard: "オンの店舗は「求人採用 → 標準の募集要項」を表示します。オフの店舗は「求人採用 → 募集内容」を表示します。",
   noindex: "オンにすると、検索エンジンに載らなくなります。通常はオフです。",
   leadTemplate: "{name} の部分は店舗名に置き換わります。",
+  postedDate: "2026-10-12 の形で入力します。募集内容を大きく変えたときに更新します。",
+  seoDescription: "Googleの検索結果で、タイトルの下に出る文章です（120字前後が目安）。",
   prefecture: "新しい都道府県は「サイト共通 → 都道府県の並び順」にも追加してください。",
 };
 
@@ -83,7 +92,7 @@ const el = (tag, props = {}, ...children) => {
   return node;
 };
 const norm = (s) => String(s).replace(/\*\*/g, "").replace(/\s+/g, "");
-const isMedia = (key, value) => ["image", "logo", "video", "qr"].includes(key) || /^\/(images|videos)\//.test(value);
+const isMedia = (key, value) => ["image", "logo", "video", "qr", "ogImage"].includes(key) || /^\/(images|videos)\//.test(value);
 
 const state = { files: {}, current: "home", device: "mobile", timers: {}, pending: new Set() };
 const preview = $("preview");

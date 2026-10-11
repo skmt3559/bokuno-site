@@ -54,5 +54,11 @@
     "text": "髪質改善美容室bokuno（ボクノ）では、お客様とのお時間を大切にできるよう完全予約制となっております。店舗一覧からお近くの店舗にご予約ください。",
     "button": "店舗を探して予約する"
   },
-  "logo": "/images/common/logo.png"
+  "logo": "/images/common/logo.png",
+  "ogImage": "/images/home/hero-poster.jpg",
+  "shoplist": {
+    "title": "店舗一覧",
+    "seoTitle": "髪質改善美容室bokuno（ボクノ）グループ店舗一覧｜極上のツヤ髪を実現するサロン案内",
+    "description": "髪質改善美容室bokuno（ボクノ）グループ店舗一覧を紹介。各店舗の特長とオリジナルの縮毛矯正で叶える艶髪を詳しく解説します。"
+  }
 }
