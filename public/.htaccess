@@ -1,0 +1,21 @@
+# 本番サーバー（ロリポップ）用の設定。GitHub Pages では使われない。
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# 本番ドメインでは https・www なしに揃える（確認用の仮アドレスでは何もしない）
+RewriteCond %{HTTP_HOST} ^(www\.)?bokuno-tuyatuya\.com$ [NC]
+RewriteCond %{HTTPS} !on
+RewriteRule ^ https://bokuno-tuyatuya.com%{REQUEST_URI} [R=301,L]
+RewriteCond %{HTTP_HOST} ^www\.bokuno-tuyatuya\.com$ [NC]
+RewriteRule ^ https://bokuno-tuyatuya.com%{REQUEST_URI} [R=301,L]
+
+# 旧サイト（WordPress）にあった応募フォームのURLは、求人ページへ案内する
+RewriteRule ^recruit/recruit-form/?$ /recruit/ [R=301,L]
+RewriteRule ^top/recruit/recruit-form/?$ /recruit/ [R=301,L]
+RewriteRule ^求人フォーム/?$ /recruit/ [R=301,L]
+RewriteRule ^top/?$ / [R=301,L]
+</IfModule>

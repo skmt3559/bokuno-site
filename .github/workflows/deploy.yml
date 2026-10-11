@@ -1,4 +1,5 @@
-# main に push されるたびにサイトを組み立て、GitHub Pages に公開する。
+# main に push されるたびにサイトを組み立て、GitHub Pages（確認用）に公開する。
+# 本番サーバー（ロリポップ）へは deploy.mjs が送る。
 # 事前にリポジトリの Settings > Pages > Source を「GitHub Actions」にしておくこと。
 name: Deploy
 
@@ -29,6 +30,8 @@ jobs:
       - run: node build.mjs
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # GitHub Pages は確認用。本番（bokuno-tuyatuya.com）と重複して検索に載らないようにする
+          NOINDEX: "1"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

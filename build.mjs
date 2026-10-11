@@ -43,12 +43,23 @@ function validate(content, lenient) {
   }
 }
 
-export async function build({ fresh = false } = {}) {
+// outDir / base / noindex は、本番サーバーへ送るとき（deploy.mjs）や確認用の置き場に出すときに指定する
+export async function build({ fresh = false, outDir = DIST, base = BASE, noindex = !!process.env.NOINDEX } = {}) {
+  const DIST = outDir;
   const content = await loadContent();
   validate(content, fresh);
+  const hidden = noindex || content.site.noindex;
   const templates = join(ROOT, "src", "templates.mjs");
   const { renderSite } = await import(pathToFileURL(templates).href + (fresh ? `?t=${Date.now()}` : ""));
-  const pages = renderSite(content, BASE);
+  const pages = renderSite(content, base, { noindex: hidden });
+
+  // 検索エンジン向け。公開前（noindex）の間は全ページを載せない指定にする
+  const origin = (content.site.url || "").replace(/\/$/, "");
+  const urls = Object.keys(pages).filter((p) => p.endsWith("index.html")).map((p) => `${origin}/${p.replace(/index\.html$/, "")}`);
+  pages["robots.txt"] = hidden ? "User-agent: *\nDisallow: /\n" : `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`;
+  if (!hidden && origin) {
+    pages["sitemap.xml"] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc></url>`).join("\n")}\n</urlset>\n`;
+  }
 
   await rm(DIST, { recursive: true, force: true });
   await mkdir(join(DIST, "assets"), { recursive: true });
@@ -60,7 +71,7 @@ export async function build({ fresh = false } = {}) {
     await mkdir(dirname(out), { recursive: true });
     await writeFile(out, html);
   }
-  return Object.keys(pages).length;
+  return Object.keys(pages).filter((p) => p.endsWith(".html")).length;
 }
 
 const MIME = {
@@ -76,6 +87,8 @@ const MIME = {
   ".avif": "image/avif",
   ".ico": "image/x-icon",
   ".txt": "text/plain; charset=utf-8",
+  ".xml": "application/xml; charset=utf-8",
+  ".php": "text/plain; charset=utf-8",
   ".mp4": "video/mp4",
   ".gif": "image/gif",
 };

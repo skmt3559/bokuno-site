@@ -80,7 +80,7 @@ export function createEditor({ root, build }) {
       await git("checkout", "--", "content");
       return status();
     },
-    "POST /api/publish": async () => {
+    "POST /api/publish": async (req, url) => {
       await build(); // 内容に誤りがあればここで止まり、公開しない
       await git("add", "-A", "--", "content", "public");
       const staged = (await git("diff", "--cached", "--name-only")).stdout.trim();
@@ -93,9 +93,17 @@ export function createEditor({ root, build }) {
         await git(...id, "commit", "-m", "サイト内容を更新（編集画面から）");
       }
       const before = await status();
-      if (!staged && !before.unpushed) return { published: false, ...before };
+      if (!staged && !before.unpushed && !url.searchParams.has("force")) return { published: false, ...before };
       await git("push", "origin", "HEAD");
-      return { published: true, ...(await status()) };
+      // 本番サーバーへ送る（deploy.config.json の enabled が true のとき）
+      const config = JSON.parse(await readFile(join(root, "deploy.config.json"), "utf8"));
+      let deployed = false;
+      if (config.enabled) {
+        const { deploy } = await import("../deploy.mjs");
+        await deploy();
+        deployed = true;
+      }
+      return { published: true, deployed, url: deployed ? config.url : undefined, ...(await status()) };
     },
   };
 

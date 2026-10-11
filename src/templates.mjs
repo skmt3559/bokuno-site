@@ -11,7 +11,7 @@ const br = (s) => esc(s).replace(/\n/g, "<br>");
 const rich = (s) => br(s).replace(/\*\*(.+?)\*\*/g, '<em class="mark">$1</em>');
 const telHref = (tel) => `tel:${String(tel).replace(/[^0-9+]/g, "")}`;
 
-export function renderSite(content, base = "") {
+export function renderSite(content, base = "", { noindex = false } = {}) {
   const { site, home, kaizen, service, recruit, company, contact, shops } = content;
   const url = (path) => (/^(https?:|tel:|mailto:|#)/.test(path) ? path : base + path);
   const recruitingShops = shops.filter((s) => s.recruiting);
@@ -89,7 +89,10 @@ export function renderSite(content, base = "") {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(isHome ? title : `${title}｜${site.fullName}`)}</title>
 <meta name="description" content="${esc(description || site.description)}">
-${site.noindex ? '<meta name="robots" content="noindex, nofollow">' : ""}
+${noindex || site.noindex ? '<meta name="robots" content="noindex, nofollow">' : ""}
+${site.url && path.endsWith("/") ? `<link rel="canonical" href="${esc(site.url.replace(/\/$/, "") + path)}">` : ""}
+<link rel="icon" href="${url("/favicon.png")}" type="image/png">
+<link rel="apple-touch-icon" href="${url("/apple-touch-icon.png")}">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description || site.description)}">
 <meta property="og:type" content="website">
@@ -526,8 +529,12 @@ ${applyBlock()}`,
   <div class="wrap wrap--narrow">
     <p class="lead">${br(contact.lead)}</p>
     <p class="notice">${br(contact.notice)} <a href="${url("/shoplist/")}">店舗一覧はこちら</a></p>
-    <!-- 送信機能は未実装。action を付けるまでこのフォームはどこにも送信しない。 -->
-    <form class="form" data-contact-form novalidate>
+    <!-- 送信は public/inquiry/send.php（PHPが動く本番サーバーでのみ送れる）。contact.enabled が false の間は送信しない。 -->
+    <form class="form" data-contact-form novalidate${
+      contact.enabled
+        ? ` action="${url("/inquiry/send.php")}" method="post" data-sending="${esc(contact.sendingLabel)}" data-success="${esc(contact.successMessage)}" data-error="${esc(contact.errorMessage)}"`
+        : ""
+    }>
       ${contact.fields
         .map((f) => {
           const id = `f-${f.name}`;
@@ -536,8 +543,14 @@ ${applyBlock()}`,
           ${f.type === "textarea" ? `<textarea ${attrs} rows="7"></textarea>` : `<input type="${esc(f.type)}" ${attrs}>`}</div>`;
         })
         .join("")}
-      <p class="form__disabled">${esc(contact.disabledNote)}</p>
-      <button class="btn btn--solid" type="submit" disabled>${esc(contact.submitLabel)}</button>
+      ${
+        contact.enabled
+          ? `<div class="form__hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+      <p class="form__status" data-form-status role="status" aria-live="polite" hidden></p>
+      <button class="btn btn--solid" type="submit">${esc(contact.submitLabel)}</button>`
+          : `<p class="form__disabled">${esc(contact.disabledNote)}</p>
+      <button class="btn btn--solid" type="submit" disabled>${esc(contact.submitLabel)}</button>`
+      }
     </form>
   </div>
 </section>`,

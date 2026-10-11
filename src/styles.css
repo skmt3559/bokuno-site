@@ -1040,6 +1040,27 @@ main:has(.sticky-reserve) {
 .form textarea {
   resize: vertical;
 }
+.form__hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.form__status {
+  margin: 28px 0 16px;
+  padding: 16px 20px;
+  border-left: 3px solid var(--accent);
+  background: var(--tint);
+  line-height: 1.9;
+}
+.form__status[data-state="error"] {
+  border-left-color: #a4432f;
+  color: #8a3323;
+}
+.form__status + .btn {
+  margin-top: 8px;
+}
 .form__disabled {
   margin: 32px 0 16px;
   font-size: 13px;

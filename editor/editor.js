@@ -56,6 +56,7 @@ const LABELS = {
   mapEmbed: "Googleマップの埋め込みURL", recruiting: "求人を募集中", points: "この店舗のこだわり", notice: "注意書き", fields: "入力項目",
   submitLabel: "送信ボタンの文字", disabledNote: "送信できない旨の案内", placeholder: "入力例", required: "必須", leadTemplate: "紹介文",
   groups: "区分", recruitStandard: "標準の募集要項を使う",
+  enabled: "フォームから送信できるようにする", sendingLabel: "送信中のボタンの文字", successMessage: "送信できたときの案内", errorMessage: "送信できなかったときの案内",
   qr: "QRコードの画像", qrNote: "QRコードの説明",
   workplaceHeading: "勤務店舗の見出し", conditionsHeading: "募集内容の見出し", conditionsNote: "募集内容の注記",
 };
@@ -65,7 +66,7 @@ const NOTES = {
   mapEmbed: "Googleマップの「共有 → 地図を埋め込む」に出てくる src のURLです。",
   recruiting: "オフにすると、この店舗の求人ページがなくなります。",
   recruitStandard: "オンの店舗は「求人採用 → 標準の募集要項」を表示します。オフの店舗は「求人採用 → 募集内容」を表示します。",
-  noindex: "仮公開の間はオンのままにします。本公開するときにオフにします。",
+  noindex: "オンにすると、検索エンジンに載らなくなります。通常はオフです。",
   leadTemplate: "{name} の部分は店舗名に置き換わります。",
   prefecture: "新しい都道府県は「サイト共通 → 都道府県の並び順」にも追加してください。",
 };
@@ -614,7 +615,8 @@ $("publish").addEventListener("click", async () => {
   try {
     await flush();
     const r = await api("POST", "publish");
-    toast(r.published ? `公開しました。1〜2分で反映されます。<br><a href="${SITE_URL}" target="_blank" rel="noopener">${SITE_URL}</a>` : "公開する変更はありませんでした。", { html: true });
+    const link = r.url || SITE_URL;
+    toast(r.published ? `公開しました。${r.deployed ? "サイトに反映されています。" : "1〜2分で反映されます。"}<br><a href="${link}" target="_blank" rel="noopener">${link}</a>` : "公開する変更はありませんでした。", { html: true });
   } catch (e) {
     toast("公開できませんでした。\n" + e.message, { error: true });
   }
