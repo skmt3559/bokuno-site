@@ -3,6 +3,7 @@
 //   node build.mjs --serve   ローカル確認用サーバー（リクエストごとに再ビルド）
 import { readFile, writeFile, mkdir, rm, cp, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { createServer } from "node:http";
 import { dirname, extname, join, normalize } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -51,7 +52,9 @@ export async function build({ fresh = false, outDir = DIST, base = BASE, noindex
   const hidden = noindex || content.site.noindex;
   const templates = join(ROOT, "src", "templates.mjs");
   const { renderSite } = await import(pathToFileURL(templates).href + (fresh ? `?t=${Date.now()}` : ""));
-  const pages = renderSite(content, base, { noindex: hidden });
+  // CSS・JS は中身が変わるたびにURLの ?v= が変わり、古いものが残らないようにする
+  const assetVersion = createHash("sha1").update(await readFile(join(ROOT, "src", "styles.css"))).update(await readFile(join(ROOT, "src", "site.js"))).digest("hex").slice(0, 8);
+  const pages = renderSite(content, base, { noindex: hidden, assetVersion });
 
   // 検索エンジン向け。公開前（noindex）の間は全ページを載せない指定にする
   const origin = (content.site.url || "").replace(/\/$/, "");

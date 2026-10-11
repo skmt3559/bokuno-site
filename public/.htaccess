@@ -2,6 +2,14 @@
 DirectoryIndex index.html
 ErrorDocument 404 /404.html
 Options -Indexes
+AddDefaultCharset UTF-8
+
+# ページ本体はサーバー側（ロリポップのアクセラレータ）にもブラウザにも溜めない。更新をすぐ反映させるため
+<IfModule mod_headers.c>
+<FilesMatch "\.(html|xml|txt)$">
+Header set Cache-Control "no-cache, must-revalidate"
+</FilesMatch>
+</IfModule>
 
 # 表示を速くする：圧縮と、写真・動画などのブラウザ保存
 <IfModule mod_deflate.c>

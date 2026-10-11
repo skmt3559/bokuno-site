@@ -11,7 +11,7 @@ const br = (s) => esc(s).replace(/\n/g, "<br>");
 const rich = (s) => br(s).replace(/\*\*(.+?)\*\*/g, '<em class="mark">$1</em>');
 const telHref = (tel) => `tel:${String(tel).replace(/[^0-9+]/g, "")}`;
 
-export function renderSite(content, base = "", { noindex = false } = {}) {
+export function renderSite(content, base = "", { noindex = false, assetVersion = "" } = {}) {
   const { site, home, kaizen, service, recruit, company, contact, shops } = content;
   const url = (path) => (/^(https?:|tel:|mailto:|#)/.test(path) ? path : base + path);
   const recruitingShops = shops.filter((s) => s.recruiting);
@@ -132,7 +132,7 @@ ${image || site.ogImage ? `<meta property="og:image" content="${esc(abs(image ||
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="${url("/assets/styles.css")}">
+<link rel="stylesheet" href="${url("/assets/styles.css")}${assetVersion && `?v=${assetVersion}`}">
 ${isHome && home.hero.image ? `<link rel="preload" as="image" href="${esc(url(home.hero.image))}" fetchpriority="high">` : ""}
 ${crumbs}${jsonld}
 </head>
@@ -176,7 +176,7 @@ ${body}
     <p class="site-footer__copy">&copy; ${esc(company.rows[0]?.value?.split("（")[0] || site.name)}</p>
   </div>
 </footer>
-<script src="${url("/assets/site.js")}" defer></script>
+<script src="${url("/assets/site.js")}${assetVersion && `?v=${assetVersion}`}" defer></script>
 </body>
 </html>
 `;
