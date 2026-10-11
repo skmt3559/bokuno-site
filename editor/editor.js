@@ -1,5 +1,5 @@
 // 編集画面。content/*.json をフォームにして、右のプレビューにすぐ反映する。
-const SITE_URL = "https://skmt3559.github.io/bokuno-site/";
+const SITE_URL = "https://bokuno-tuyatuya.com/";
 
 const FILES = [
   { name: "home", label: "トップ", path: "/" },

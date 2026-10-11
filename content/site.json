@@ -4,7 +4,7 @@
   "tagline": "髪質改善美容室",
   "description": "髪質改善美容室bokuno（ボクノ）の公式サイト。独自の縮毛矯正とマンツーマンのカウンセリングで、乾かすだけでまとまるツヤ髪へ。",
   "url": "https://bokuno-tuyatuya.com",
-  "noindex": true,
+  "noindex": false,
   "instagram": "https://www.instagram.com/bokuno_eita/",
   "prefectureOrder": [
     "神奈川県",

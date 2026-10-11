@@ -1,5 +1,6 @@
 {
   "host": "bokuno",
-  "dir": "bokuno-new",
-  "enabled": false
+  "dir": "bokuno-tuyatuya.com",
+  "url": "https://bokuno-tuyatuya.com/",
+  "enabled": true
 }
