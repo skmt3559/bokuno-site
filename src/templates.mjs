@@ -257,7 +257,7 @@ ${body}
 </section>
 
 <section class="section">
-  <div class="wrap split">
+  <div class="wrap split split--compact">
     ${photo(home.recruit.image, "働くスタッフのイメージ", "split__photo")}
     <div class="split__text">
       ${heading("Recruit", home.recruit.heading)}

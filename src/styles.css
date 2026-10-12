@@ -1463,6 +1463,38 @@ main:has(.sticky-reserve) {
   border-radius: var(--radius-lg);
 }
 
+/* ---- 写真を小さめにして文字と横に並べる区画（トップの Recruit）。スマホでも横並びのまま ---- */
+.split--compact {
+  grid-template-columns: 40% 1fr;
+  gap: 20px 18px;
+  align-items: start;
+}
+.split--compact .split__text {
+  display: contents;
+}
+.split--compact .heading {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  margin-bottom: 4px;
+}
+.split--compact .split__photo {
+  grid-column: 1;
+  grid-row: 2;
+  border-radius: var(--radius);
+}
+.split--compact .split__text > p {
+  grid-column: 2;
+  grid-row: 2;
+  font-size: 14px;
+  line-height: 1.9;
+}
+.split--compact .btn {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  justify-self: start;
+  margin-top: 8px;
+}
+
 /* ---- トップ：動画を全面に、文字を重ねる ---- */
 .hero {
   position: relative;
@@ -1661,6 +1693,21 @@ main:has(.sticky-reserve) {
 }
 
 @media (min-width: 600px) {
+  .split--compact {
+    grid-template-columns: 36% 1fr;
+    gap: 16px 32px;
+  }
+  .split--compact .split__photo {
+    grid-row: 2 / span 2;
+  }
+  .split--compact .split__text > p {
+    font-size: inherit;
+    align-self: end;
+  }
+  .split--compact .btn {
+    grid-column: 2;
+    align-self: start;
+  }
   .hero__text {
     padding: 0 40px 44px;
   }
@@ -1694,6 +1741,31 @@ main:has(.sticky-reserve) {
   }
   .hero__actions {
     grid-template-columns: repeat(2, max-content);
+  }
+  .split--compact {
+    grid-template-columns: 34% 1fr;
+    gap: 56px;
+    align-items: center;
+    max-width: 960px;
+  }
+  .split--compact .split__photo {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .split--compact .split__text {
+    display: block;
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .split--compact .heading {
+    margin-bottom: 20px;
+  }
+  .split--compact .split__text > p {
+    font-size: inherit;
+    line-height: inherit;
+  }
+  .split--compact .btn {
+    margin-top: 28px;
   }
   .global-nav__reserve {
     display: inline-flex;
