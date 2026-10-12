@@ -11,6 +11,9 @@ const br = (s) => esc(s).replace(/\n/g, "<br>");
 const rich = (s) => br(s).replace(/\*\*(.+?)\*\*/g, '<em class="mark">$1</em>');
 const telHref = (tel) => `tel:${String(tel).replace(/[^0-9+]/g, "")}`;
 
+// Web フォントは、読み込みを待たずに先に文字を表示する（届いたら差し替わる）
+const FONTS = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&amp;family=Noto+Sans+JP:wght@400;500&amp;family=Shippori+Mincho:wght@400;500&amp;display=swap";
+
 export function renderSite(content, base = "", { noindex = false, assetVersion = "" } = {}) {
   const { site, home, kaizen, service, recruit, company, contact, shops } = content;
   const url = (path) => (/^(https?:|tel:|mailto:|#)/.test(path) ? path : base + path);
@@ -22,9 +25,10 @@ export function renderSite(content, base = "", { noindex = false, assetVersion =
 
   // ---- 部品 ----
 
-  const photo = (image, alt, cls = "") =>
+  // first: ページを開いて最初に見える写真。後回しにせず優先して読み込む（表示速度の指標 LCP のため）
+  const photo = (image, alt, cls = "", { first = false } = {}) =>
     image
-      ? `<div class="photo ${cls}"><img src="${esc(url(image))}" alt="${esc(alt)}" loading="lazy"></div>`
+      ? `<div class="photo ${cls}"><img src="${esc(url(image))}" alt="${esc(alt)}" ${first ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></div>`
       : `<div class="photo photo--empty ${cls}" role="img" aria-label="${esc(alt)}（写真準備中）"><span>Photo</span></div>`;
 
   const logoMark = () =>
@@ -58,6 +62,18 @@ export function renderSite(content, base = "", { noindex = false, assetVersion =
     addressCountry: "JP",
   });
   const rowsHtml = (rows) => rows.filter((r) => r.value).map((r) => `<p><strong>${esc(r.label)}</strong><br>${br(r.value)}</p>`).join("");
+
+  // 店舗ごとのよくある質問。文面の型は site.json、{…} にその店舗のデータを入れる。データが空の質問は出さない
+  const shopFaq = (shop) =>
+    (site.shopFaq?.items || [])
+      .map((item) => {
+        const used = [...(item.q + item.a).matchAll(/\{(\w+)\}/g)].map((m) => m[1]);
+        if (used.some((key) => key !== "access" && !shop[key])) return null;
+        if (/予約/.test(item.q) && !shop.reserveUrl) return null;
+        const fill = (text) => text.replace(/\{(\w+)\}/g, (_, key) => (key === "name" ? shop.listName || shop.name : shop[key] || "")).trim();
+        return { q: fill(item.q), a: fill(item.a) };
+      })
+      .filter(Boolean);
 
   // 直前に描いたパンくずを覚えておき、layout がそのページの構造化データにする
   let lastTrail = null;
@@ -131,7 +147,8 @@ ${image || site.ogImage ? `<meta property="og:image" content="${esc(abs(image ||
 <meta name="format-detection" content="telephone=no">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="${FONTS}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="${FONTS}"></noscript>
 <link rel="stylesheet" href="${url("/assets/styles.css")}${assetVersion && `?v=${assetVersion}`}">
 ${isHome && home.hero.image ? `<link rel="preload" as="image" href="${esc(url(home.hero.image))}" fetchpriority="high">` : ""}
 ${crumbs}${jsonld}
@@ -205,7 +222,7 @@ ${body}
   </div>
   ${
     home.hero.video
-      ? `<div class="photo hero__photo"><video src="${esc(url(home.hero.video))}"${home.hero.image ? ` poster="${esc(url(home.hero.image))}"` : ""} autoplay muted loop playsinline preload="metadata" aria-label="サロンのイメージ動画"></video></div>`
+      ? `<div class="photo hero__photo"><video data-src="${esc(url(home.hero.video))}"${home.hero.image ? ` poster="${esc(url(home.hero.image))}"` : ""} muted loop playsinline preload="none" aria-label="サロンのイメージ動画"></video></div>`
       : photo(home.hero.image, "サロンのイメージ", "hero__photo")
   }
 </section>
@@ -284,7 +301,7 @@ ${reserveCta()}`,
 <section class="section">
   <div class="wrap split">
     <div class="split__text"><h2 class="statement">${br(kaizen.lead.heading)}</h2><p>${br(kaizen.lead.text)}</p></div>
-    ${photo(kaizen.lead.image, "髪質改善のイメージ", "split__photo")}
+    ${photo(kaizen.lead.image, "髪質改善のイメージ", "split__photo", { first: true })}
   </div>
 </section>
 <section class="section section--tint">
@@ -375,6 +392,10 @@ ${reserveCta()}`,
   });
 
   pages["shoplist/index.html"] = layout({
+    jsonld: ld({
+      "@type": "ItemList",
+      itemListElement: shops.map((s, i) => ({ "@type": "ListItem", position: i + 1, name: s.name, url: abs(`/shoplist/${s.slug}/`) })),
+    }),
     title: site.shoplist?.title || "店舗一覧",
     seoTitle: site.shoplist?.seoTitle,
     description: site.shoplist?.description || `髪質改善美容室bokunoの店舗一覧（全${shops.length}店舗）。`,
@@ -404,9 +425,10 @@ ${reserveCta()}`,
         image: shop.image ? abs(shop.image) : undefined,
         telephone: shop.tel || undefined,
         address: shop.address ? postalAddress(shop) : undefined,
+        hasMap: shop.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shop.address.replace(/〒\s*\d{3}-\d{4}\s*/, ""))}` : undefined,
         parentOrganization: organization,
         potentialAction: shop.reserveUrl ? { "@type": "ReserveAction", target: shop.reserveUrl } : undefined,
-      }),
+      }) + (shopFaq(shop).length ? ld({ "@type": "FAQPage", mainEntity: shopFaq(shop).map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }) : ""),
       path: `/shoplist/${shop.slug}/`,
       body: `<header class="page-header page-header--shop"><div class="wrap">
   ${breadcrumb([{ label: "店舗一覧", href: "/shoplist/" }, { label: shop.listName || shop.name }])}
@@ -416,7 +438,7 @@ ${reserveCta()}`,
 </div></header>
 <section class="section section--flush">
   <div class="wrap shop-detail">
-    ${photo(shop.image, shop.name, "shop-detail__photo")}
+    ${photo(shop.image, shop.name, "shop-detail__photo", { first: true })}
     <div class="shop-detail__info">
       ${heading("Information", "店舗情報")}
       ${table([
@@ -438,6 +460,12 @@ ${
     ${shop.intro ? `<p class="lead">${br(shop.intro)}</p>` : ""}
     ${shop.points?.length ? `<ol class="point-list point-list--single">${shop.points.map((p, i) => `<li><p class="feature__no">${String(i + 1).padStart(2, "0")}</p><h3 class="feature__title">${esc(p.title)}</h3><p>${br(p.text)}</p></li>`).join("")}</ol>` : ""}
     </div></section>`
+    : ""
+}
+${
+  shopFaq(shop).length
+    ? `<section class="section section--tint"><div class="wrap wrap--narrow">${heading("FAQ", site.shopFaq.heading)}
+    <dl class="faq">${shopFaq(shop).map((f) => `<div class="faq__item"><dt>${esc(f.q)}</dt><dd>${br(f.a)}</dd></div>`).join("")}</dl></div></section>`
     : ""
 }
 ${
@@ -486,7 +514,7 @@ ${shop.reserveUrl ? `<a class="sticky-reserve" href="${esc(shop.reserveUrl)}" ta
 <section class="section">
   <div class="wrap split">
     <div class="split__text"><p class="heading__en">Message</p><h2 class="statement">${br(recruit.lead.heading)}</h2><p class="message__intro">${rich(recruit.lead.intro)}</p></div>
-    ${photo(recruit.lead.image, "働くスタッフのイメージ", "split__photo")}
+    ${photo(recruit.lead.image, "働くスタッフのイメージ", "split__photo", { first: true })}
   </div>
   <div class="wrap wrap--narrow message">
     <div class="message__body">${recruit.lead.paragraphs.map((p) => `<p>${rich(p)}</p>`).join("")}</div>
@@ -549,7 +577,7 @@ ${applyBlock()}`,
 </div></header>
 <section class="section section--flush">
   <div class="wrap shop-detail">
-    ${photo(shop.image, shop.name, "shop-detail__photo")}
+    ${photo(shop.image, shop.name, "shop-detail__photo", { first: true })}
     <div class="shop-detail__info">
       ${heading("Workplace", recruit.shopPage.workplaceHeading)}
       ${table([

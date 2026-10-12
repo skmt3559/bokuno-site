@@ -28,9 +28,10 @@ AddOutputFilterByType DEFLATE text/html text/css text/javascript application/jav
 ExpiresActive On
 ExpiresDefault "access plus 10 minutes"
 ExpiresByType text/html "access plus 0 seconds"
-ExpiresByType text/css "access plus 1 hour"
-ExpiresByType text/javascript "access plus 1 hour"
-ExpiresByType application/javascript "access plus 1 hour"
+# CSS・JS は中身が変わるとURLの ?v= が変わるので、長く保存してよい
+ExpiresByType text/css "access plus 1 year"
+ExpiresByType text/javascript "access plus 1 year"
+ExpiresByType application/javascript "access plus 1 year"
 ExpiresByType image/jpeg "access plus 30 days"
 ExpiresByType image/png "access plus 30 days"
 ExpiresByType image/webp "access plus 30 days"
@@ -62,4 +63,6 @@ RewriteRule ^recruit/recruit-form/?$ /recruit/ [R=301,L]
 RewriteRule ^top/recruit/recruit-form/?$ /recruit/ [R=301,L]
 RewriteRule ^求人フォーム/?$ /recruit/ [R=301,L]
 RewriteRule ^top/?$ / [R=301,L]
+RewriteRule ^髪質改善美容室bokuno求人/?$ /recruit/ [R=301,L]
+RewriteRule ^(default/)?ブログ/?$ / [R=301,L]
 </IfModule>

@@ -61,7 +61,7 @@ export async function build({ fresh = false, outDir = DIST, base = BASE, noindex
   const urls = Object.keys(pages).filter((p) => p.endsWith("index.html")).map((p) => `${origin}/${p.replace(/index\.html$/, "")}`);
   pages["robots.txt"] = hidden ? "User-agent: *\nDisallow: /\n" : `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`;
   if (!hidden && origin) {
-    pages["sitemap.xml"] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc></url>`).join("\n")}\n</urlset>\n`;
+    pages["sitemap.xml"] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10)}</lastmod></url>`).join("\n")}\n</urlset>\n`;
   }
 
   await rm(DIST, { recursive: true, force: true });

@@ -13,6 +13,19 @@ if (btn && menu) {
   window.matchMedia("(min-width: 960px)").addEventListener("change", () => setOpen(false));
 }
 
+// トップの動画は、ページの表示が終わってから読み込む（最初の表示を速くするため）。通信量節約の設定の人には流さない
+const heroVideo = document.querySelector("video[data-src]");
+if (heroVideo) {
+  const connection = navigator.connection || {};
+  const start = () => {
+    if (connection.saveData || /2g/.test(connection.effectiveType || "")) return;
+    heroVideo.src = heroVideo.dataset.src;
+    heroVideo.play().catch(() => {});
+  };
+  if (document.readyState === "complete") start();
+  else window.addEventListener("load", start, { once: true });
+}
+
 // ヘッダー：少しスクロールしたら影をつける
 const header = document.querySelector("[data-header]");
 if (header) {
