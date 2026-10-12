@@ -1787,6 +1787,10 @@ main:has(.sticky-reserve) {
   .section--tint > .wrap {
     width: min(100% - 96px, 1120px);
   }
+  /* 幅を絞った区画は、背景色つきでも絞ったままにする（上の指定で広がらないように） */
+  .section--tint > .wrap--narrow {
+    width: min(100% - 96px, 760px);
+  }
   .shop-card__photo {
     border-radius: var(--radius-lg);
   }
