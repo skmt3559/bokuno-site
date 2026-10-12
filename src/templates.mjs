@@ -427,6 +427,7 @@ ${reserveCta()}`,
         { label: "営業時間", value: shop.hours },
         { label: "定休日", value: shop.closed },
       ])}
+      ${[shop.address, shop.access, shop.tel, shop.seats, shop.hours, shop.closed].some(Boolean) ? "" : '<p class="note">店舗情報は準備中です。</p>'}
       ${shop.reserveUrl ? `<div class="shop-detail__reserve">${button("この店舗を予約する", shop.reserveUrl, { variant: "solid", external: true })}<p class="note">ホットペッパービューティーの予約ページへ移動します。</p></div>` : ""}
     </div>
   </div>
