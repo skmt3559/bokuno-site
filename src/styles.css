@@ -1352,3 +1352,380 @@ main:has(.sticky-reserve) {
     transition: none !important;
   }
 }
+
+/* ==========================================================================
+   デザイン調整（2026-10）：全体を少しモダンに
+   内容や構成は変えず、色・余白・角の丸み・見出しの組み方・動きだけを上書きする
+   ========================================================================== */
+:root {
+  --bg: #f8f5f0;
+  --surface: #ffffff;
+  --tint: #f0ebe3;
+  --ink: #26221f;
+  --muted: #7b7168;
+  --line: #e1d9cd;
+  --accent: #8c7a5b;
+  --accent-deep: #63523a;
+  --sage: #7d8a70;
+  --deep: #26221f;
+  --radius: 14px;
+  --radius-lg: 28px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ---- ヘッダー：スクロールすると影がつく ---- */
+.site-header {
+  border-bottom-color: transparent;
+  transition: box-shadow 0.4s, border-color 0.4s;
+}
+.site-header.is-scrolled {
+  border-bottom-color: var(--line);
+  box-shadow: 0 6px 24px rgba(38, 34, 31, 0.06);
+}
+
+/* ---- ボタン：丸みのある形に ---- */
+.btn {
+  min-height: 58px;
+  padding: 10px 10px 10px 30px;
+  border-radius: 999px;
+  border-color: var(--ink);
+  font-size: 14px;
+  transition: background 0.35s var(--ease), color 0.35s var(--ease), border-color 0.35s var(--ease), transform 0.35s var(--ease);
+}
+.btn__arrow {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(38, 34, 31, 0.08);
+  transform: none;
+  transition: transform 0.35s var(--ease), background 0.35s var(--ease);
+}
+.btn__arrow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 7px;
+  height: 7px;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: translateX(-2px) rotate(45deg);
+}
+.btn--solid .btn__arrow {
+  background: rgba(255, 255, 255, 0.16);
+}
+.cta .btn--solid .btn__arrow,
+.hero .btn--solid .btn__arrow {
+  background: rgba(38, 34, 31, 0.08);
+}
+@media (hover: hover) {
+  a:hover .btn__arrow {
+    transform: translateX(4px);
+  }
+  .btn:not([disabled]):hover .btn__arrow {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+.shop-card__more .btn__arrow {
+  width: 30px;
+  height: 30px;
+}
+
+/* ---- 見出し：組み方は元のまま（英字は小さく、和文が主役） ---- */
+.heading {
+  margin-bottom: 44px;
+}
+.statement {
+  font-size: clamp(24px, 6vw, 36px);
+}
+
+/* ---- 写真：角を丸く、重ねたときにゆっくり拡大 ---- */
+.photo {
+  border-radius: var(--radius);
+}
+.photo img,
+.photo video {
+  transition: transform 1.2s var(--ease);
+}
+@media (hover: hover) {
+  a:hover .photo img,
+  .feature:hover .photo img,
+  .menu-item:hover .photo img {
+    transform: scale(1.045);
+  }
+}
+.split__photo,
+.shop-detail__photo,
+.prose__photo,
+.company__photo {
+  border-radius: var(--radius-lg);
+}
+
+/* ---- トップ：動画を全面に、文字を重ねる ---- */
+.hero {
+  position: relative;
+  display: block;
+  margin: 0 var(--gutter);
+  min-height: 0;
+  color: #fff;
+}
+.hero__photo {
+  order: 0;
+  aspect-ratio: auto;
+  height: min(78svh, 680px);
+  min-height: 520px;
+  border-radius: var(--radius-lg);
+}
+.hero__photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20, 16, 12, 0.08) 0%, rgba(20, 16, 12, 0.18) 40%, rgba(20, 16, 12, 0.72) 100%);
+}
+.hero__text {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 1;
+  padding: 0 24px 32px;
+}
+.hero__eyebrow {
+  color: rgba(255, 255, 255, 0.85);
+}
+.hero__heading {
+  margin: 12px 0 14px;
+  font-size: clamp(22px, 6.1vw, 44px);
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
+}
+.hero__lead {
+  font-size: 14px;
+  line-height: 1.9;
+  color: rgba(255, 255, 255, 0.92);
+}
+.hero__actions {
+  margin-top: 22px;
+  gap: 10px;
+}
+.hero .btn {
+  min-height: 52px;
+}
+.hero .btn--solid {
+  background: #fff;
+  border-color: #fff;
+  color: var(--ink);
+}
+.hero .btn--line {
+  border-color: rgba(255, 255, 255, 0.7);
+  color: #fff;
+  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.08);
+}
+.hero .btn--line .btn__arrow {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.page-header + .section {
+  padding-top: 48px;
+}
+
+/* ---- カード類 ---- */
+.section--tint {
+  margin-inline: var(--gutter);
+  border-radius: var(--radius-lg);
+}
+.section--tint > .wrap {
+  width: min(100% - 40px, 1120px);
+}
+.section--tint > .wrap--narrow {
+  width: min(100% - 40px, 760px);
+}
+.feature__no,
+.flow__no {
+  font-size: 22px;
+  letter-spacing: 0.06em;
+  color: var(--sage);
+}
+.service-list {
+  gap: 10px;
+  border: 0;
+}
+.service-list a {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.4s;
+}
+.service-list__en {
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+.service-list__ja {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--muted);
+}
+.course {
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 40px rgba(38, 34, 31, 0.05);
+  border-color: transparent;
+}
+.course__label {
+  border-radius: 999px;
+  border-color: var(--sage);
+  color: var(--sage);
+}
+.chips a {
+  border-radius: 999px;
+  padding: 7px 18px;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+.shop-card a {
+  transition: transform 0.5s var(--ease);
+}
+.shop-card__pref {
+  letter-spacing: 0.14em;
+  color: var(--sage);
+}
+.voices li,
+.notice,
+.form__status,
+.image {
+  border-radius: var(--radius);
+}
+.form input,
+.form textarea {
+  border-radius: 12px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.form input:focus,
+.form textarea:focus {
+  outline: 0;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(140, 122, 91, 0.16);
+}
+.map iframe {
+  border-radius: var(--radius-lg);
+}
+.mark {
+  background: linear-gradient(transparent 62%, rgba(125, 138, 112, 0.3) 0);
+}
+@media (hover: hover) {
+  .service-list a:hover {
+    transform: translateY(-4px);
+    border-color: transparent;
+    box-shadow: 0 14px 34px rgba(38, 34, 31, 0.08);
+  }
+  .chips a:hover {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+  .shop-card a:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* ---- 予約・応募の案内：浮いた濃色のカードに ---- */
+.cta {
+  margin: 0 var(--gutter) var(--gutter);
+  border-radius: var(--radius-lg);
+}
+.sticky-reserve {
+  inset: auto 12px calc(12px + env(safe-area-inset-bottom));
+  padding: 15px 16px;
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(38, 34, 31, 0.25);
+}
+main:has(.sticky-reserve) {
+  padding-bottom: 76px;
+}
+
+/* ---- フッター ---- */
+.site-footer {
+  border-top: 0;
+}
+
+/* ---- スクロールに合わせてふわっと現れる（site.js が .reveal を付ける。動きを減らす設定の人には出さない） ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+  transition-delay: var(--reveal-delay, 0s);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (min-width: 600px) {
+  .hero__text {
+    padding: 0 40px 44px;
+  }
+  .hero__lead {
+    font-size: 15px;
+  }
+  .service-list {
+    gap: 14px;
+  }
+}
+
+@media (min-width: 960px) {
+  .heading {
+    margin-bottom: 64px;
+  }
+  .hero {
+    display: block;
+    min-height: 0;
+  }
+  .hero__photo {
+    height: min(82vh, 780px);
+    min-height: 560px;
+  }
+  .hero__text {
+    align-self: auto;
+    max-width: 860px;
+    padding: 0 64px 64px;
+  }
+  .hero__heading {
+    font-size: clamp(34px, 3.7vw, 54px);
+  }
+  .hero__actions {
+    grid-template-columns: repeat(2, max-content);
+  }
+  .global-nav__reserve {
+    display: inline-flex;
+    width: auto;
+    min-width: 0;
+    min-height: 46px;
+    margin-top: 0;
+    padding: 6px 6px 6px 22px;
+    gap: 14px;
+    font-size: 13px;
+  }
+  .global-nav__reserve .btn__arrow {
+    width: 32px;
+    height: 32px;
+  }
+  .global-nav ul {
+    gap: 22px;
+  }
+  .section--tint > .wrap {
+    width: min(100% - 96px, 1120px);
+  }
+  .shop-card__photo {
+    border-radius: var(--radius-lg);
+  }
+  .cta {
+    margin-bottom: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
