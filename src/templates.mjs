@@ -296,22 +296,6 @@ ${reserveCta()}`,
   </div>
 </section>
 <section class="section">
-  <div class="wrap">
-    ${heading("Before / After", kaizen.results.heading)}
-    <ul class="feature-grid">${kaizen.results.items
-      .map((item) => `<li class="feature">${photo(item.image, item.title, "feature__photo")}<h3 class="feature__title">${esc(item.title)}</h3><p>${br(item.text)}</p></li>`)
-      .join("")}</ul>
-    ${kaizen.results.items.some((i) => !i.image) && kaizen.results.note ? `<p class="note center">${esc(kaizen.results.note)}</p>` : ""}
-    ${
-      kaizen.results.gallery?.images?.length
-        ? `<h3 class="sub-heading">${esc(kaizen.results.gallery.heading)}</h3><ul class="gallery">${kaizen.results.gallery.images
-            .map((src, i) => `<li>${photo(src, `${kaizen.results.gallery.heading} ${i + 1}`, "gallery__photo")}</li>`)
-            .join("")}</ul>`
-        : ""
-    }
-  </div>
-</section>
-<section class="section section--tint">
   <div class="wrap wrap--narrow">
     ${heading("Flow", kaizen.flow.heading)}
     <p class="lead center">${br(kaizen.flow.text)}</p>
@@ -330,6 +314,22 @@ ${reserveCta()}`,
         : ""
     }
     ${kaizen.flow.voice ? `<p class="lead">${br(kaizen.flow.voice)}</p>` : ""}
+  </div>
+</section>
+<section class="section section--tint">
+  <div class="wrap">
+    ${heading("Before / After", kaizen.results.heading)}
+    <ul class="feature-grid">${kaizen.results.items
+      .map((item) => `<li class="feature">${photo(item.image, item.title, "feature__photo")}<h3 class="feature__title">${esc(item.title)}</h3><p>${br(item.text)}</p></li>`)
+      .join("")}</ul>
+    ${kaizen.results.items.some((i) => !i.image) && kaizen.results.note ? `<p class="note center">${esc(kaizen.results.note)}</p>` : ""}
+    ${
+      kaizen.results.gallery?.images?.length
+        ? `<h3 class="sub-heading">${esc(kaizen.results.gallery.heading)}</h3><ul class="gallery">${kaizen.results.gallery.images
+            .map((src, i) => `<li>${photo(src, `${kaizen.results.gallery.heading} ${i + 1}`, "gallery__photo")}</li>`)
+            .join("")}</ul>`
+        : ""
+    }
   </div>
 </section>
 ${reserveCta()}`,
