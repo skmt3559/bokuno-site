@@ -462,6 +462,14 @@ ${shop.reserveUrl ? `<a class="sticky-reserve" href="${esc(shop.reserveUrl)}" ta
     });
   }
 
+  // 募集内容の表。「応募ボタンを付ける」がオンの行には、文章の下に応募ボタンを出す
+  const conditionRows = () =>
+    recruit.conditions.rows.map((r) =>
+      r.applyButton && recruit.apply.url
+        ? { ...r, html: `${br(r.value)}<span class="spec__action">${button(recruit.apply.button, recruit.apply.url, { variant: "solid", external: true })}</span>` }
+        : r
+    );
+
   const applyBlock = () =>
     `<section class="cta"><div class="wrap cta__inner">${heading("Entry", recruit.apply.heading)}<p class="cta__text">${br(recruit.apply.text)}</p>
     ${recruit.apply.url ? button(recruit.apply.button, recruit.apply.url, { variant: "solid", external: true }) : ""}
@@ -499,7 +507,7 @@ ${recruit.story
   )
   .join("")}
 <section class="section${recruit.story.length % 2 === 0 ? " section--tint" : ""}">
-  <div class="wrap wrap--narrow">${heading("Requirements", recruit.conditions.heading)}${table(recruit.conditions.rows)}</div>
+  <div class="wrap wrap--narrow">${heading("Requirements", recruit.conditions.heading)}${table(conditionRows())}</div>
 </section>
 <section class="section">
   <div class="wrap">
@@ -562,7 +570,7 @@ ${applyBlock()}`,
       ? `${heading("Requirements", recruit.conditionsStandard.heading)}${recruit.conditionsStandard.groups
           .map((g) => `<section class="spec-group"><h3 class="spec-group__title">${esc(g.heading)}</h3>${table(g.rows)}</section>`)
           .join("")}`
-      : `${heading("Requirements", recruit.shopPage.conditionsHeading)}<p class="note center">${esc(recruit.shopPage.conditionsNote)}</p>${table(recruit.conditions.rows)}`
+      : `${heading("Requirements", recruit.shopPage.conditionsHeading)}<p class="note center">${esc(recruit.shopPage.conditionsNote)}</p>${table(conditionRows())}`
   }
     <p class="center">${button("bokunoの働き方を見る", "/recruit/")}</p></div>
 </section>

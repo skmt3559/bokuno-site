@@ -810,6 +810,13 @@ a {
 .spec-group .spec {
   border-top-color: var(--ink);
 }
+.spec__action {
+  display: block;
+  margin-top: 16px;
+}
+.spec .btn {
+  text-decoration: none;
+}
 .prose p + p {
   margin-top: 1.4em;
 }

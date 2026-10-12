@@ -19,47 +19,58 @@
     "rows": [
       {
         "label": "募集職種",
-        "value": "美容師"
+        "value": "美容師",
+        "applyButton": false
       },
       {
         "label": "仕事内容",
-        "value": "スタイリスト"
+        "value": "スタイリスト",
+        "applyButton": false
       },
       {
         "label": "業務形態",
-        "value": "業務委託（フリーランス）"
+        "value": "業務委託（フリーランス）",
+        "applyButton": false
       },
       {
         "label": "必須資格",
-        "value": "美容師免許"
+        "value": "美容師免許",
+        "applyButton": false
       },
       {
         "label": "応募条件",
-        "value": "年齢性別は問いません。\n美容師の仕事が好きな方はぜひご応募ください。"
+        "value": "年齢性別は問いません。\n美容師の仕事が好きな方はぜひご応募ください。",
+        "applyButton": false
       },
       {
         "label": "報酬",
-        "value": "月給 35万円〜150万円\n※試用期間 1ヶ月〜3ヶ月\n1年間の毎月35万円最低保証付き"
+        "value": "月給 35万円〜150万円\n※試用期間 1ヶ月〜3ヶ月\n1年間の毎月35万円最低保証付き",
+        "applyButton": false
       },
       {
         "label": "還元率",
-        "value": "・歩合50〜65%以上の還元（フリー・指名問いません）\n・店販売上 10％"
+        "value": "・歩合50〜65%以上の還元（フリー・指名問いません）\n・店販売上 10％",
+        "applyButton": false
       },
       {
         "label": "勤務時間",
-        "value": "自由出勤可（週3～）"
+        "value": "自由出勤可（週3～）",
+        "applyButton": false
       },
       {
         "label": "勤務地",
-        "value": "bokunoグループ各店舗"
+        "value": "bokunoグループ各店舗",
+        "applyButton": false
       },
       {
         "label": "その他",
-        "value": "・役職手当\n・SNSサポートノウハウにサポート手当\n・独立支援制度\n・副業、Wワーク可能\n・フランチャイズ店への加盟制度、支援"
+        "value": "・役職手当\n・SNSサポートノウハウにサポート手当\n・独立支援制度\n・副業、Wワーク可能\n・フランチャイズ店への加盟制度、支援",
+        "applyButton": false
       },
       {
         "label": "応募方法",
-        "value": "LINE公式アカウントよりご応募ください。\nその後、直接面接を行わせていただきます。"
+        "value": "LINE公式アカウントよりご応募ください。\nその後、直接面接を行わせていただきます。",
+        "applyButton": true
       }
     ]
   },

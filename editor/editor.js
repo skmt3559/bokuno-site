@@ -64,6 +64,7 @@ const LABELS = {
   enabled: "フォームから送信できるようにする", sendingLabel: "送信中のボタンの文字", successMessage: "送信できたときの案内", errorMessage: "送信できなかったときの案内",
   seoTitle: "検索結果に出るタイトル", seoDescription: "検索結果に出る説明文", ogImage: "SNSで共有されたときの画像", postedDate: "求人の掲載日",
   shoplist: "店舗一覧ページ",
+  applyButton: "応募ボタンを付ける",
   qr: "QRコードの画像", qrNote: "QRコードの説明",
   workplaceHeading: "勤務店舗の見出し", conditionsHeading: "募集内容の見出し", conditionsNote: "募集内容の注記",
 };
